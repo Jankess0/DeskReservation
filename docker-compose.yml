@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  # Serwis Bazy Danych
+  db:
+    image: postgres:latest
+    container_name: hotdesk_db
+    environment:
+      - POSTGRES_DB=hotdeskdb
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    image: ${DOCKER_REGISTRY-}deskreservation
+    container_name: hotdesk_api
+    build:
+      context: .
+      dockerfile: DeskReservation/Dockerfile
+    ports:
+      - "5050:8080"  
+      - "5051:8081"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=hotdeskdb;Username=admin;Password=admin
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db 
+
+volumes:
+  db_data:

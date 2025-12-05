@@ -1,0 +1,6 @@
+@DeskReservation_HostAddress = http://localhost:5088
+
+GET {{DeskReservation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
