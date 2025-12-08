@@ -1,12 +1,14 @@
 using DeskReservation.DTOs;
 using DeskReservation.Models;
 using DeskReservation.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeskReservation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;

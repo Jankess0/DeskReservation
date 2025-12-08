@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using DeskReservation.Migrations;
 using BCrypt.Net;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace DeskReservation.Services;
 
@@ -13,11 +17,13 @@ public class UserService : IUserService
 {
     private readonly AppDbContext _context;
     private readonly IMapper _userMapper;
+    private readonly IConfiguration  _configuration;
 
-    public UserService(AppDbContext context, IMapper userMapper)
+    public UserService(AppDbContext context, IMapper userMapper, IConfiguration configuration)
     {
         _context = context;
         _userMapper = userMapper;
+        _configuration = configuration;
     }
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
@@ -68,5 +74,44 @@ public class UserService : IUserService
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<string> LoginAsync(LoginDto dto)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(user => user.Email == dto.Email);
+        if (user == null) throw new Exception("Invalid email or password");
+        
+        bool ispassValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+        
+        if (!ispassValid) throw new Exception("Invalid email or password");
+        
+        var token = GenerateJwtToken(user);
+        return token;
+    }
+
+    public string GenerateJwtToken(User user)
+    {
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+        
+        //Claims - dane uzytkwonika zaszyte w tokenie
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+        
+        //konfiguracja podpisu 
+        var creds =  new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        
+        //tworzenie Tokena
+        var token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.Now.AddDays(int.Parse(jwtSettings["ExpireDays"])),
+            signingCredentials: creds
+        );
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
