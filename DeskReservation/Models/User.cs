@@ -19,5 +19,7 @@ public class User
     
     [Required]
     public string Lastname { get; set; }
-    
+
+    public UserRole Role { get; set; } = UserRole.User;
+
 }

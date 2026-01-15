@@ -28,5 +28,9 @@ public class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
             .WithMany(r => r.Desks)
             .HasForeignKey(r => r.RoomId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasConversion<string>();
     }
 }
