@@ -1,9 +1,8 @@
 namespace DeskReservation.Models;
 
-public enum Status
+public enum DeskState
 {
     Available,
     Occupied,
-    Cleaning,
-    OutOfOrder
+    Cleaning
 }

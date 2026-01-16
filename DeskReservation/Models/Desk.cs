@@ -14,11 +14,11 @@ public class Desk
     public string? Description { get; set; }
 
     [Required]
-    public bool IsAdminOnly;
+    public bool IsAdminOnly { get; set; }
     
-    public DeskState State { get; set; }
+    public DeskState Status { get; set; }
     
-    public DateTime LastStatusChangeDate { get; set; }
+    public DateTime LastStatusChangeDate { get; set; } =  DateTime.UtcNow;
 
     // [ForeignKey("Room")]
     // public int RoomId { get; set; }
