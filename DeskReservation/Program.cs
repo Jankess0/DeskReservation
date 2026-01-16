@@ -36,6 +36,7 @@ builder.Services.AddAuthentication(options =>
     });
  
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDeskService, DeskService>();
 
 var app = builder.Build();
 
