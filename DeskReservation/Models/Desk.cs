@@ -12,8 +12,13 @@ public class Desk
     public string Name { get; set; }
     
     public string? Description { get; set; }
+
+    [Required]
+    public bool IsAdminOnly;
     
-    [ForeignKey("Room")]
-    public int RoomId { get; set; }
-    public Room Room { get; set; }
+    public DateTime LastStatusChangeDate { get; set; }
+
+    // [ForeignKey("Room")]
+    // public int RoomId { get; set; }
+    // public Room Room { get; set; }
 }
