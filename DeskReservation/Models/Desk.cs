@@ -16,6 +16,8 @@ public class Desk
     [Required]
     public bool IsAdminOnly;
     
+    public DeskState State { get; set; }
+    
     public DateTime LastStatusChangeDate { get; set; }
 
     // [ForeignKey("Room")]
