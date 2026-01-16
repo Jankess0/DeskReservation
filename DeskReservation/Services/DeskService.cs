@@ -2,6 +2,7 @@ using AutoMapper;
 using DeskReservation.DbContext;
 using DeskReservation.DTOs;
 using DeskReservation.Models;
+using DeskReservation.Observer;
 using DeskReservation.State;
 using DeskReservation.Strategy;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +13,15 @@ public class DeskService : IDeskService
 {
     private readonly AppDbContext _context;
     private readonly IMapper _deskMapper;
+    private IEnumerable<IObserver> _observers;
 
 
-
-    public DeskService(AppDbContext context, IMapper deskMapper)
+    public DeskService(AppDbContext context, IMapper deskMapper, IEnumerable<IObserver> observers)
     {
         _context = context;
         _deskMapper = deskMapper;
+        _observers = observers;
+      
     }
 
     public async Task<IEnumerable<DeskDto>> GetAllAsync()
@@ -80,7 +83,15 @@ public class DeskService : IDeskService
         var state = GetState(desk.Status);
         state.CheckOut(desk);
         
-        return await _context.SaveChangesAsync() > 0;
+        var result = await _context.SaveChangesAsync() > 0;
+        if (result)
+        {
+            foreach (var observer in _observers)
+            {
+                observer.Update(desk);
+            }
+        }
+        return result;
     }
 
     private IReservationStrategy GetStrategy(UserRole userRole)

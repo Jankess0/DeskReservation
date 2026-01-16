@@ -24,6 +24,6 @@ public class CleaningState : IDeskState
 
     public void CheckOut(Desk desk)
     {
-        throw new Exception("Cannot check in desk is being cleaning.");
+        throw new Exception("You have already checked out the desk.");
     }
 }

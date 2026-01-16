@@ -1,5 +1,6 @@
 using System.Text;
 using DeskReservation.DbContext;
+using DeskReservation.Observer;
 using DeskReservation.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,7 @@ builder.Services.AddAuthentication(options =>
  
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDeskService, DeskService>();
+builder.Services.AddScoped<IObserver, CleaningServiceNotifier>();
 
 var app = builder.Build();
 
