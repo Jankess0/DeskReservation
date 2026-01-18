@@ -9,6 +9,9 @@ public interface IDeskService
 {
     Task<IEnumerable<DeskDto>> GetAllAsync();
     Task<DeskDto> GetDeskAsync(int id);
+    Task<bool> CreateDeskAsync(CreateDeskDto desk);
+    Task<bool> UpdateDeskAsync(CreateDeskDto desk, int id);
+    Task<bool> DeleteDeskAsync(int id);
     Task<bool> CheckInAsync(int deskId, int userId);
     Task<bool> CheckOutAsync(int deskId);
 

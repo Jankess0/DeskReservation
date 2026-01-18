@@ -91,6 +91,39 @@ public class DeskService : IDeskService
         return result;
     }
 
+    public async Task<bool> CreateDeskAsync(CreateDeskDto deskDto)
+    {
+        var desk = _deskMapper.Map<Desk>(deskDto);
+
+        desk.Status = DeskState.Available;
+        
+        await _context.Desks.AddAsync(desk);
+        
+        var result = await _context.SaveChangesAsync() > 0;
+        return result;
+    }
+
+    public async Task<bool> DeleteDeskAsync(int deskId)
+    {
+        var desk = await _context.Desks.FindAsync(deskId);
+        if (desk == null) throw new Exception("Desk not found");
+        _context.Desks.Remove(desk);
+        var result = await _context.SaveChangesAsync() > 0;
+        return result;
+    }
+
+    public async Task<bool> UpdateDeskAsync(CreateDeskDto deskDto, int id)
+    {
+        var desk = await _context.Desks.FindAsync(id);
+        if (desk == null) return false;
+        
+        _deskMapper.Map(deskDto, desk);
+        desk.Status = DeskState.Available;
+        
+        var result = await _context.SaveChangesAsync() > 0;
+        return result;
+    }
+
     private IReservationStrategy GetStrategy(UserRole userRole)
     {
         if (userRole == UserRole.Admin) return new AdminStrategy();
@@ -115,12 +148,12 @@ public class DeskService : IDeskService
             var timeElapsed = DateTime.UtcNow - desk.LastStatusChangeDate;
             if (timeElapsed.TotalMinutes >= CleaningTime)
             {
-                deskDto.State = "Available";
+                deskDto.Status = "Available";
             }
             else
             {
                 int minutesLeft = CleaningTime - (int)timeElapsed.TotalMinutes;
-                deskDto.State = $"Cleaning {minutesLeft} minutes";
+                deskDto.Status = $"Cleaning {minutesLeft} minutes";
             }
         }
     }

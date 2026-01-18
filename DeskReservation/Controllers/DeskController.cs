@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using DeskReservation.DTOs;
 using DeskReservation.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -71,5 +72,30 @@ public class DeskController : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+    }
+
+    [HttpPost]
+    [Authorize (Roles = "Admin")]
+    public async Task<IActionResult> CreateDeskAsync([FromBody] CreateDeskDto deskDto)
+    {
+        var result = await _deskService.CreateDeskAsync(deskDto);
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    [Authorize (Roles = "Admin")]
+    public async Task<IActionResult> UpdateDeskAsync([FromBody] CreateDeskDto deskDto, [FromRoute] int id)
+    {
+        var result = await _deskService.UpdateDeskAsync(deskDto, id);
+        return Ok(result);
+    }
+
+    
+    [HttpDelete("{id}")]
+    [Authorize (Roles = "Admin")]
+    public async Task<IActionResult> DeleteDeskAsync([FromRoute] int id)
+    {
+        var result = await _deskService.DeleteDeskAsync(id);
+        return Ok(result);
     }
 }
