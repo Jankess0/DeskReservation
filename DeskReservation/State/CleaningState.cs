@@ -4,7 +4,7 @@ namespace DeskReservation.State;
 
 public class CleaningState : IDeskState
 {
-    public const int CleaningDuration = 30;
+    public const int CleaningDuration = 1;
     
     public void CheckIn(Desk desk)
     {

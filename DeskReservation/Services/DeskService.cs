@@ -15,6 +15,8 @@ public class DeskService : IDeskService
     private readonly IMapper _deskMapper;
     private IEnumerable<IObserver> _observers;
 
+    private const int CleaningTime = 1;
+
 
     public DeskService(AppDbContext context, IMapper deskMapper, IEnumerable<IObserver> observers)
     {
@@ -27,8 +29,14 @@ public class DeskService : IDeskService
     public async Task<IEnumerable<DeskDto>> GetAllAsync()
     {
         var desks = await _context.Desks.ToListAsync();
-        return _deskMapper.Map<IEnumerable<DeskDto>>(desks);
-    }
+        var desksDto = _deskMapper.Map<IEnumerable<DeskDto>>(desks);
+
+        for (int i = 0; i < desks.Count(); i++)
+        {
+            CheckCleaningProgress(desksDto.ElementAt(i), desks[i]);
+        }
+        return desksDto;
+}
 
     public async Task<DeskDto> GetDeskAsync(int id)
     {
@@ -37,19 +45,8 @@ public class DeskService : IDeskService
         
         var deskDto = _deskMapper.Map<DeskDto>(desk);
 
-        if (desk.Status == DeskState.Cleaning)
-        {
-            var timeElapsed = DateTime.UtcNow - desk.LastStatusChangeDate;
-            if (timeElapsed.TotalMinutes >= 30)
-            {
-                deskDto.State = "Available";
-            }
-            else
-            {
-                int minutesLeft = 30 - (int)timeElapsed.TotalMinutes;
-                deskDto.State = $"Cleaning {minutesLeft} minutes";
-            }
-        }
+        CheckCleaningProgress(deskDto, desk);
+        
         return deskDto;
     }
 
@@ -109,5 +106,22 @@ public class DeskService : IDeskService
             DeskState.Available => new AvailableState(),
             _ => throw new NotImplementedException($"Stan {deskState} not implemented")
         };
+    }
+
+    private void CheckCleaningProgress(DeskDto deskDto, Desk desk)
+    {
+        if (desk.Status == DeskState.Cleaning)
+        {
+            var timeElapsed = DateTime.UtcNow - desk.LastStatusChangeDate;
+            if (timeElapsed.TotalMinutes >= CleaningTime)
+            {
+                deskDto.State = "Available";
+            }
+            else
+            {
+                int minutesLeft = CleaningTime - (int)timeElapsed.TotalMinutes;
+                deskDto.State = $"Cleaning {minutesLeft} minutes";
+            }
+        }
     }
 }
