@@ -1,0 +1,26 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DeskReservation.Models;
+
+public class Desk
+{
+    [Key]
+    public int Id { get; set; }
+    
+    [Required]
+    public string Name { get; set; }
+    
+    public string? Description { get; set; }
+
+    [Required]
+    public bool IsAdminOnly { get; set; }
+    
+    public DeskState Status { get; set; }
+    
+    public DateTime LastStatusChangeDate { get; set; } =  DateTime.UtcNow;
+
+    // [ForeignKey("Room")]
+    // public int RoomId { get; set; }
+    // public Room Room { get; set; }
+}
