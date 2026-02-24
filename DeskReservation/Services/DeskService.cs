@@ -53,16 +53,16 @@ public class DeskService : IDeskService
     public async Task<bool> CheckInAsync(int deskId, int userId)
     {
         var desk = await _context.Desks.FindAsync(deskId);
-        if (desk == null) throw new Exception("Desk not found");
+        if (desk == null) throw new KeyNotFoundException("Desk not found");
         
         var user = await _context.Users.FindAsync(userId);
-        if (user == null) throw new Exception("User not found");
+        if (user == null) throw new KeyNotFoundException("User not found");
 
         var strategy = GetStrategy(user.Role);
 
         if (!strategy.Validate(desk))
         {
-            throw new Exception("No permission to check in desk");
+            throw new UnauthorizedAccessException("No permission to check in desk");
         }
 
         var state = GetState(desk.Status);
