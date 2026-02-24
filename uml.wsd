@@ -1,0 +1,223 @@
+@startuml
+' --- KONFIGURACJA GRAFICZNA ---
+skinparam linetype ortho
+skinparam shadowing false
+skinparam nodesep 50
+skinparam ranksep 50
+skinparam roundcorner 10
+skinparam classAttributeIconSize 0
+
+' Kolory
+skinparam package {
+    ' Domeny Główne
+    BackgroundColor<<UserDomain>> HoneyDew
+    BorderColor<<UserDomain>> SeaGreen
+    
+    BackgroundColor<<DeskDomain>> AliceBlue
+    BorderColor<<DeskDomain>> SteelBlue
+    
+    ' Wzorce
+    BackgroundColor<<Strategy>> Lavender
+    BorderColor<<Strategy>> MediumPurple
+    
+    BackgroundColor<<State>> MistyRose
+    BorderColor<<State>> IndianRed
+    
+    BackgroundColor<<Observer>> LightYellow
+    BorderColor<<Observer>> Gold
+}
+
+left to right direction
+
+' ==========================================
+' 1. USER DOMAIN
+' ==========================================
+package "User Domain" <<UserDomain>> {
+    
+    class UserController {
+        +GetUsersAsync()
+        +GetUserAsync(id)
+        +CreateUserAsync(dto)
+        +EditUserAsync(id, dto)
+        +DeleteUserAsync(id)
+    }
+
+    class LoginController {
+        +LoginAsync(dto)
+    }
+
+    interface IUserService {
+        +GetAllUsersAsync()
+        +GetUserAsync(id)
+        +CreateUserAsync(dto)
+        +UpdateUserAsync(id, dto)
+        +DeleteUserAsync(id)
+        +LoginAsync(dto)
+    }
+
+    class UserService {
+        +GetAllUsersAsync()
+        +GetUserAsync(id)
+        +CreateUserAsync(dto)
+        +UpdateUserAsync(id, dto)
+        +DeleteUserAsync(id)
+        +LoginAsync(dto)
+        -GenerateJwtToken(user)
+    }
+
+    class User {
+        +Email : string
+        +PasswordHash : string
+        +Role : UserRole
+    }
+
+    enum UserRole {
+        User
+        Admin
+    }
+}
+
+' ==========================================
+' 2. DESK DOMAIN
+' ==========================================
+package "Desk Domain" <<DeskDomain>> {
+    
+    class DeskController {
+        +GetDesksAsync()
+        +GetDeskAsync(id)
+        +CheckIn(id)
+        +CheckOut(id)
+        +CreateDeskAsync(dto)
+        +UpdateDeskAsync(dto, id)
+        +DeleteDeskAsync(id)
+    }
+
+    interface IDeskService {
+        +GetAllAsync()
+        +GetDeskAsync(id)
+        +CreateDeskAsync(dto)
+        +UpdateDeskAsync(dto, id)
+        +DeleteDeskAsync(id)
+        +CheckInAsync(deskId, userId)
+        +CheckOutAsync(deskId)
+    }
+
+    class DeskService {
+        -IEnumerable<IObserver> _observers
+        -GetStrategy(userRole)
+        -GetState(deskState)
+        +CheckInAsync(...)
+        +CheckOutAsync(...)
+    }
+
+    class Desk {
+        +Name : string
+        +Status : DeskState
+        +IsAdminOnly : bool
+    }
+
+    enum DeskStateEnum {
+        Available
+        Occupied
+        Cleaning
+    }
+}
+
+' ==========================================
+' 3. STRATEGY PATTERN
+' ==========================================
+package "Strategy Pattern" <<Strategy>> {
+    interface IReservationStrategy {
+        +Validate(desk) : bool
+    }
+    
+    class AdminStrategy {
+        +Validate(desk) : bool
+    }
+    
+    class EmployeeStrategy {
+        +Validate(desk) : bool
+    }
+}
+
+' ==========================================
+' 4. STATE PATTERN
+' ==========================================
+package "State Pattern" <<State>> {
+    interface IDeskState {
+        +CheckIn(desk)
+        +CheckOut(desk)
+    }
+    
+    class AvailableState {
+        +CheckIn(desk)
+        +CheckOut(desk)
+    }
+    
+    class OccupiedState {
+        +CheckIn(desk)
+        +CheckOut(desk)
+    }
+    
+    class CleaningState {
+        +CheckIn(desk)
+        +CheckOut(desk)
+    }
+}
+
+' ==========================================
+' 5. OBSERVER PATTERN
+' ==========================================
+package "Observer Pattern" <<Observer>> {
+    interface IObserver {
+        +Update(desk)
+    }
+    
+    class CleaningServiceNotifier {
+        +Update(desk)
+        +SendEmail(desk)
+    }
+}
+
+' ==========================================
+' RELACJE
+' ==========================================
+
+' --- User Domain ---
+UserController ..> IUserService : uses
+LoginController ..> IUserService : uses
+UserService ..|> IUserService : implements
+UserService --> User : manages
+User *-- UserRole
+
+' --- Desk Domain ---
+DeskController ..> IDeskService : uses
+DeskService ..|> IDeskService : implements
+DeskService --> Desk : manages
+Desk *-- DeskStateEnum
+
+' --- Integracja Serwisu ze Wzorcami ---
+DeskService ..> IReservationStrategy : factory/use
+DeskService ..> IDeskState : factory/use
+DeskService o-- IObserver : notifies
+
+' --- Implementacje Wzorców ---
+AdminStrategy ..|> IReservationStrategy
+EmployeeStrategy ..|> IReservationStrategy
+
+AvailableState ..|> IDeskState
+OccupiedState ..|> IDeskState
+CleaningState ..|> IDeskState
+
+CleaningServiceNotifier ..|> IObserver
+
+' --- Zależności Logiczne ---
+EmployeeStrategy ..> Desk : checks IsAdminOnly
+CleaningServiceNotifier ..> Desk : reads status/name
+AvailableState ..> Desk : modifies status
+OccupiedState ..> Desk : modifies status
+CleaningState ..> Desk : modifies status
+
+' --- Cross-Domain (Service sprawdza usera) ---
+DeskService ..> User : reads Role for Strategy
+@enduml
