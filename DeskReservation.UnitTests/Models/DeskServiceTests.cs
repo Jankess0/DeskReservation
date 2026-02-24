@@ -1,5 +1,6 @@
 using AutoMapper;
 using DeskReservation.DbContext;
+using DeskReservation.DTOs;
 using DeskReservation.Models;
 using DeskReservation.Observer;
 using DeskReservation.Services;
@@ -214,4 +215,65 @@ public class DeskServiceTests
             .WithMessage("Desk not found");
     }
     
+    [Fact]
+    public async Task GetDeskAsync_WhenDeskIsCleaningAndTimePassed_ShouldReturnDTOStateAvailble()
+    {
+        // ARRANGE
+        var dbContext = GetInMemoryDbContext(Guid.NewGuid().ToString());
+        var mapperMock = new Mock<IMapper>();
+        var observers = new List<IObserver>();
+        var service = new DeskService(dbContext, mapperMock.Object, observers);
+
+        var desk = new Desk
+        {
+            Id = 1,
+            Name = "Desk 1",
+            IsAdminOnly = false,
+            LastStatusChangeDate = DateTime.UtcNow.AddHours(-2),
+            Status = DeskState.Cleaning
+        };
+        dbContext.Desks.Add(desk);
+        await dbContext.SaveChangesAsync();
+
+        var fakeDto = new DeskDto { Id = 1, Status = "Cleaning" };
+        mapperMock.Setup(x => x.Map<DeskDto>(It.IsAny<Desk>())).Returns(fakeDto);
+        
+        // ACT
+        var result = await service.GetDeskAsync(1);
+        
+        // ASSERT
+        result.Should().NotBeNull();
+        result.Status.Should().Be("Available");
+    }
+    
+    [Fact]
+    public async Task GetDeskAsync_WhenDeskIsCleaningAndTimeNotPassed_ShouldReturnDTOStateCleaning()
+    {
+        // ARRANGE
+        var dbContext = GetInMemoryDbContext(Guid.NewGuid().ToString());
+        var mapperMock = new Mock<IMapper>();
+        var observers = new List<IObserver>();
+        var service = new DeskService(dbContext, mapperMock.Object, observers);
+
+        var desk = new Desk
+        {
+            Id = 1,
+            Name = "Desk 1",
+            IsAdminOnly = false,
+            LastStatusChangeDate = DateTime.UtcNow,
+            Status = DeskState.Cleaning
+        };
+        dbContext.Desks.Add(desk);
+        await dbContext.SaveChangesAsync();
+
+        var fakeDto = new DeskDto { Id = 1, Status = "Cleaning" };
+        mapperMock.Setup(x => x.Map<DeskDto>(It.IsAny<Desk>())).Returns(fakeDto);
+        
+        // ACT
+        var result = await service.GetDeskAsync(1);
+        
+        // ASSERT
+        result.Should().NotBeNull();
+        result.Status.Should().Be("Cleaning 1 minutes");
+    }
 }
