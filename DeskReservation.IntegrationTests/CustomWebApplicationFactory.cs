@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Testcontainers.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using DeskReservation.DbContext;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -42,6 +43,13 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
             using var scope = services.BuildServiceProvider().CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             dbContext.Database.EnsureCreated();
+            
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "TestUser";
+                options.DefaultChallengeScheme = "TestUser";
+            }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestUser", options => { })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestAdmin", options => { });
         });
     }
 }

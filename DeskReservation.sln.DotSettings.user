@@ -7,5 +7,6 @@
       &lt;TestId&gt;xUnit::4D5B3902-951C-4394-A139-2B720F438B5B::net8.0::DeskReservation.UnitTests.Models.DeskServiceTests.GetDeskAsync_WhenDeskIsCleaningAndTimeNotPassed_ShouldReturnDTOStateCleaning&lt;/TestId&gt;
     &lt;/TestAncestor&gt;
     &lt;ProjectFile&gt;F59D9005-C7C7-48F6-825B-549EAC713A2E/f:DeskControllerTests.cs&lt;/ProjectFile&gt;
+    &lt;Project Location="/Users/kamil/Desktop/DeskReservation/DeskReservation.UnitTests" Presentation="&amp;lt;DeskReservation.UnitTests&amp;gt;" /&gt;
   &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
