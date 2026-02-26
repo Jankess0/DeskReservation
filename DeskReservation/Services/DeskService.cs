@@ -41,7 +41,7 @@ public class DeskService : IDeskService
     public async Task<DeskDto> GetDeskAsync(int id)
     {
         var desk = await _context.Desks.FindAsync(id);
-        if (desk == null) return null;
+        if (desk == null) throw new Exception($"Desk with id {id} not found");
         
         var deskDto = _deskMapper.Map<DeskDto>(desk);
 

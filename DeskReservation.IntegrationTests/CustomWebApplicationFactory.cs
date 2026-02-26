@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Testcontainers.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using DeskReservation.DbContext;
+using DeskReservation.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +44,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
             using var scope = services.BuildServiceProvider().CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             dbContext.Database.EnsureCreated();
+            var testDesk = new Desk { Id = 1, Name = "testDesk", IsAdminOnly = true };
+            dbContext.Desks.Add(testDesk);
+            dbContext.SaveChangesAsync();
             
             services.AddAuthentication(options =>
             {

@@ -29,8 +29,17 @@ public class DeskController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDeskAsync([FromRoute] int id)
     {
-        var desk = await _deskService.GetDeskAsync(id);
-        return Ok(desk);
+        try
+        {
+            var desk = await _deskService.GetDeskAsync(id);
+            return Ok(desk);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(404, new { error = ex.Message });
+        }
+        
+        
     }
 
     [HttpPost("{id}/checkin")]
