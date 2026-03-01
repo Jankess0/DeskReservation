@@ -16,6 +16,7 @@ public class DeskService : IDeskService
     private IEnumerable<IObserver> _observers;
 
     private const int CleaningTime = 1;
+    private const string DeskDtoAvailableState = "Available";
 
 
     public DeskService(AppDbContext context, IMapper deskMapper, IEnumerable<IObserver> observers)
@@ -31,14 +32,10 @@ public class DeskService : IDeskService
         var desks = await _context.Desks.ToListAsync();
         var desksDto = _deskMapper.Map<IEnumerable<DeskDto>>(desks);
 
-        for (int i = 0; i < desks.Count(); i++)
+        for (int i = 0; i < desksDto.Count(); i++)
         {
-            if (CheckCleaningProgress(desksDto.ElementAt(i), desks[i]))
-            {
-                desks[i].Status = DeskState.Available;
-            }
+            await CheckCleaningProgress(desksDto.ElementAt(i), desks[i]);
         }
-        await _context.SaveChangesAsync();
         
         return desksDto;
 }
@@ -49,12 +46,8 @@ public class DeskService : IDeskService
         if (desk == null) throw new Exception($"Desk with id {id} not found");
         
         var deskDto = _deskMapper.Map<DeskDto>(desk);
-
-        if (CheckCleaningProgress(deskDto, desk))
-        {
-            desk.Status = DeskState.Available;
-        }
-         await _context.SaveChangesAsync();
+        
+        await CheckCleaningProgress(deskDto, desk);
         
         return deskDto;
     }
@@ -133,6 +126,16 @@ public class DeskService : IDeskService
         return result;
     }
 
+    public async Task<IEnumerable<DeskDto>> GetAvailableDesksAsync()
+    {
+        var desks = await GetAllAsync();
+        var avalialeDesks = desks
+            .Where(d => d.Status == DeskDtoAvailableState)
+            .ToList();
+
+        return avalialeDesks;
+    }
+
     private IReservationStrategy GetStrategy(UserRole userRole)
     {
         if (userRole == UserRole.Admin) return new AdminStrategy();
@@ -150,15 +153,17 @@ public class DeskService : IDeskService
         };
     }
 
-    private bool CheckCleaningProgress(DeskDto deskDto, Desk desk)
+    public async Task<bool> CheckCleaningProgress(DeskDto deskDto, Desk desk)
     {
         if (desk.Status == DeskState.Cleaning)
         {
             var timeElapsed = DateTime.UtcNow - desk.LastStatusChangeDate;
             if (timeElapsed.TotalMinutes >= CleaningTime)
             {
-                deskDto.Status = "Available";
-                return true;
+                deskDto.Status = DeskDtoAvailableState;
+                desk.Status = DeskState.Available;
+                var result = await _context.SaveChangesAsync() > 0;
+                return result;
             }
             else
             {
