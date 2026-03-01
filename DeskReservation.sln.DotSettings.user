@@ -1,6 +1,12 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AObject_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FSourcesCache_003F68b06b8592b1287fd78f3ee68566d6a38d6e2f45b9a9e6ebd4d0e9972f7c29_003FObject_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6918ff0f_002Dc5c2_002D400a_002Db1bc_002Dd6fbeececdf5/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CheckIn_WhenDeskExistsAndUserHasNotPermission_ShouldThrowException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;ProjectFile&gt;4D5B3902-951C-4394-A139-2B720F438B5B/d:Models/f:DeskServiceTests.cs&lt;/ProjectFile&gt;
-&lt;/SessionState&gt;</s:String>
-	</wpf:ResourceDictionary>
+  &lt;Or&gt;
+    &lt;TestAncestor&gt;
+      &lt;TestId&gt;xUnit::4D5B3902-951C-4394-A139-2B720F438B5B::net8.0::DeskReservation.UnitTests.Models.DeskServiceTests.GetDeskAsync_WhenDeskIsCleaningAndTimePassed_ShouldReturnDTOStateAvailble&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::4D5B3902-951C-4394-A139-2B720F438B5B::net8.0::DeskReservation.UnitTests.Models.DeskServiceTests.GetDeskAsync_WhenDeskIsCleaningAndTimeNotPassed_ShouldReturnDTOStateCleaning&lt;/TestId&gt;
+    &lt;/TestAncestor&gt;
+    &lt;ProjectFile&gt;F59D9005-C7C7-48F6-825B-549EAC713A2E/f:DeskControllerTests.cs&lt;/ProjectFile&gt;
+    &lt;Project Location="/Users/kamil/Desktop/DeskReservation/DeskReservation.UnitTests" Presentation="&amp;lt;DeskReservation.UnitTests&amp;gt;" /&gt;
+  &lt;/Or&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

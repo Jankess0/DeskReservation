@@ -29,10 +29,24 @@ public class DeskController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDeskAsync([FromRoute] int id)
     {
-        var desk = await _deskService.GetDeskAsync(id);
-        return Ok(desk);
+        try
+        {
+            var desk = await _deskService.GetDeskAsync(id);
+            return Ok(desk);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(404, new { error = ex.Message });
+        }
     }
 
+    [HttpGet("availabledesks")]
+    public async Task<IActionResult> GetAvailableDesksAsync()
+    {
+        var desks = await _deskService.GetAvailableDesksAsync();
+        return Ok(desks);
+    }
+    
     [HttpPost("{id}/checkin")]
     public async Task<IActionResult> CheckIn([FromRoute] int id)
     {
