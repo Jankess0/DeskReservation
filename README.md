@@ -40,6 +40,7 @@ Autoryzacja odbywa się poprzez przekazanie tokenu JWT w nagłówku żądania: `
 | Metoda | Endpoint | Opis |
 | :--- | :--- | :--- |
 | **GET** | `/Desk` | Pobiera listę wszystkich biurek i ich status. |
+| **GET** | `/Desk/availabledesks` | Pobiera listę dostępnych biurek. |
 | **GET** | `/Desk/{id}` | Pobiera szczegóły konkretnego biurka. |
 | **POST** | `/Desk` | Dodaje nowe biurko (Admin). |
 | **PUT** | `/Desk/{id}` | Aktualizuje dane biurka (Admin). |
