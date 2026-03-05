@@ -13,13 +13,14 @@ public class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Room> Rooms { get; set; }
     public DbSet<Desk> Desks { get; set; }
     public DbSet<Floor> Floors { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Room>()
-            .HasOne(f => f.Floor)
-            .WithMany(r => r.Rooms)
+            .HasOne(r => r.Floor)
+            .WithMany(f => f.Rooms)
             .HasForeignKey(f => f.FloorId)
             .OnDelete(DeleteBehavior.Cascade);
         
@@ -28,6 +29,19 @@ public class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         //     .WithMany(r => r.Desks)
         //     .HasForeignKey(r => r.RoomId)
         //     .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Booking>()
+            .HasOne(b => b.User)
+            .WithMany(u => u.Bookings)
+            .HasForeignKey(b => b.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Booking>()
+            .HasOne(b => b.Desk)
+            .WithMany(d => d.Bookings)
+            .HasForeignKey(b => b.DeskId)
+            .OnDelete(DeleteBehavior.Cascade);
+          
 
         modelBuilder.Entity<User>()
             .Property(u => u.Role)

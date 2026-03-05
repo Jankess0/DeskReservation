@@ -100,7 +100,7 @@ public class DeskServiceTests
             Email = "mock@email.com",
             PasswordHash = "password",
             FirstName = "Name",
-            Lastname = "Last",
+            LastName = "Last",
             Role = UserRole.User
         };
         
@@ -142,7 +142,7 @@ public class DeskServiceTests
             Email = "mock@email.com",
             PasswordHash = "password",
             FirstName = "Name",
-            Lastname = "Last",
+            LastName = "Last",
             Role = UserRole.User
         };
         
@@ -201,7 +201,7 @@ public class DeskServiceTests
             Email = "mock@email.com",
             PasswordHash = "password",
             FirstName = "Name",
-            Lastname = "Last",
+            LastName = "Last",
             Role = UserRole.User
         };
         dbContext.Users.Add(user);

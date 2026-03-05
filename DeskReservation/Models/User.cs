@@ -18,8 +18,10 @@ public class User
     public string FirstName { get; set; }
     
     [Required]
-    public string Lastname { get; set; }
+    public string LastName { get; set; }
 
     public UserRole Role { get; set; } = UserRole.User;
+    
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
 }
