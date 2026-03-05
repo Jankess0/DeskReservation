@@ -79,7 +79,13 @@ public class DeskController : ControllerBase
     {
         try
         {
-            await _deskService.CheckOutAsync(id);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized("Token Error");
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+                return BadRequest("Token Error");
+            
+            await _deskService.CheckOutAsync(id, userId);
             return Ok(new { message = "Check Out Success" });
         }
         catch (Exception ex)

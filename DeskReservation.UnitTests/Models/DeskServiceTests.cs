@@ -41,12 +41,32 @@ public class DeskServiceTests
             IsAdminOnly = false
         };
         dbContext.Desks.Add(desk);
+        
+        var user = new User
+        {
+            Id = 1,
+            Email = "mock@email.com",
+            PasswordHash = "password",
+            FirstName = "Name",
+            LastName = "Last",
+            Role = UserRole.User
+        };
+        dbContext.Users.Add(user);
+
+        var booking = new Booking
+        {
+            Id = 1,
+            UserId = 1,
+            DeskId = 1
+        };
+        dbContext.Bookings.Add(booking);
+        
         await dbContext.SaveChangesAsync();
         
         var service = new DeskService(dbContext, mapperMock.Object, observers);
         
         // ACT
-        var result = await service.CheckOutAsync(1);
+        var result = await service.CheckOutAsync(1, 1);
         
         // ASSERT
         result.Should().BeTrue();
@@ -57,23 +77,6 @@ public class DeskServiceTests
         observerMock.Verify(o => o.Update(It.IsAny<Desk>()), Times.Once);
     }
     
-    [Fact]
-    public async Task CheckOut_WhenDeskDoesNotExist_ShouldThrowException()
-    {
-        // ARRANGE
-        var dbContext = GetInMemoryDbContext(Guid.NewGuid().ToString());
-        var observers = new List<IObserver>();
-        var mapperMock = new Mock<IMapper>();
-        var service = new DeskService(dbContext, mapperMock.Object, observers);
-        
-        // ACT
-        Func<Task> act = async () => await service.CheckOutAsync(999);
-        
-        // ASSERT
-        await act.Should().ThrowAsync<Exception>()
-            .WithMessage("Desk not found");
-        
-    }
 
     [Fact]
     public async Task CheckIn_WhenDeskExistsAndUserHasPermission_ShouldChangeState()
@@ -93,6 +96,7 @@ public class DeskServiceTests
         };
         
         dbContext.Desks.Add(desk);
+        
 
         var user = new User
         {

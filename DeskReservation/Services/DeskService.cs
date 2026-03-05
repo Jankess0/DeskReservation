@@ -69,18 +69,32 @@ public class DeskService : IDeskService
 
         var state = GetState(desk.Status);
         state.CheckIn(desk);
+
+        var newBooking = new Booking
+        {
+            UserId = userId,
+            DeskId = deskId,
+            StartDate = DateTime.UtcNow
+        };
+        
+        await _context.Bookings.AddAsync(newBooking);
         
         return await _context.SaveChangesAsync() > 0;
 
     }
 
-    public async Task<bool> CheckOutAsync(int deskId)
+    public async Task<bool> CheckOutAsync(int deskId, int userId)
     {
         var desk = await _context.Desks.FindAsync(deskId);
         if (desk == null) throw new Exception("Desk not found");
         
         var state = GetState(desk.Status);
         state.CheckOut(desk);
+        
+        var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.UserId == userId && b.DeskId == deskId && b.EndDate == null);
+        if (booking == null) throw new Exception("Booking not found");
+        
+        booking.EndDate = DateTime.UtcNow;
         
         var result = await _context.SaveChangesAsync() > 0;
         if (result)

@@ -13,7 +13,7 @@ public interface IDeskService
     Task<bool> UpdateDeskAsync(CreateDeskDto desk, int id);
     Task<bool> DeleteDeskAsync(int id);
     Task<bool> CheckInAsync(int deskId, int userId);
-    Task<bool> CheckOutAsync(int deskId);
+    Task<bool> CheckOutAsync(int deskId, int userId);
     Task<IEnumerable<DeskDto>> GetAvailableDesksAsync();
 
 }
