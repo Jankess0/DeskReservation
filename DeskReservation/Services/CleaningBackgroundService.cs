@@ -56,7 +56,6 @@ public class CleaningBackgroundService : BackgroundService
                 
                 _logger.LogInformation($"BackgroundService: Desk ID {desk.Id} finished cleaning and is now Available.");
             }
-            
         }
         if (anyDeskUpdated)
         {

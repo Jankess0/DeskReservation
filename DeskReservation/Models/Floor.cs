@@ -8,7 +8,7 @@ public class Floor
     public int Id { get; set; }
     
     [Required]
-    public string Name { get; set; }
+    public string FloorNumber { get; set; }
     
     public ICollection<Room> Rooms { get; set; } =  new HashSet<Room>();
 }
