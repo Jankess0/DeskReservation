@@ -5,6 +5,7 @@ using DeskReservation.Models;
 using DeskReservation.Observer;
 using DeskReservation.State;
 using DeskReservation.Strategy;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeskReservation.Services;
@@ -24,32 +25,54 @@ public class DeskService : IDeskService
         _context = context;
         _deskMapper = deskMapper;
         _observers = observers;
-      
     }
 
     public async Task<IEnumerable<DeskDto>> GetAllAsync()
     {
-        var desks = await _context.Desks.ToListAsync();
-        var desksDto = _deskMapper.Map<IEnumerable<DeskDto>>(desks);
+        var desks = await _context.Desks
+            .Include(d => d.Room)
+            .ToListAsync();
+        var desksDto = _deskMapper.Map<IEnumerable<DeskDto>>(desks).ToList();
 
         for (int i = 0; i < desksDto.Count(); i++)
         {
-            await CheckCleaningProgress(desksDto.ElementAt(i), desks[i]);
+            await CheckCleaningProgress(desksDto[i], desks[i]);
         }
+
+        await _context.SaveChangesAsync();
         
         return desksDto;
 }
 
     public async Task<DeskDto> GetDeskAsync(int id)
     {
-        var desk = await _context.Desks.FindAsync(id);
+        var desk = await _context.Desks
+            .Include(d => d.Room)
+            .FirstOrDefaultAsync(d => d.Id == id);
         if (desk == null) throw new Exception($"Desk with id {id} not found");
         
         var deskDto = _deskMapper.Map<DeskDto>(desk);
         
         await CheckCleaningProgress(deskDto, desk);
         
+        await _context.SaveChangesAsync();
+        
         return deskDto;
+    }
+
+    public async Task<IEnumerable<DeskDto>> GetDesksByRoomIdAsync(int roomId)
+    {
+        var desks = await _context.Desks.Where(d => d.RoomId == roomId)
+            .Include(d => d.Room)
+            .ToListAsync();
+        if (desks.Count == 0) throw new Exception($"Empty room");
+        var desksDto = _deskMapper.Map<IEnumerable<DeskDto>>(desks);
+        
+        for (int i = 0; i < desksDto.Count(); i++)
+        {
+            await CheckCleaningProgress(desksDto.ElementAt(i), desks[i]);
+        }
+        return desksDto;
     }
 
     public async Task<bool> CheckInAsync(int deskId, int userId)
@@ -176,14 +199,11 @@ public class DeskService : IDeskService
             {
                 deskDto.Status = DeskDtoAvailableState;
                 desk.Status = DeskState.Available;
-                var result = await _context.SaveChangesAsync() > 0;
-                return result;
             }
             else
             {
                 int minutesLeft = CleaningTime - (int)timeElapsed.TotalMinutes;
                 deskDto.Status = $"Cleaning {minutesLeft} minutes";
-                
             }
         }
         return false;

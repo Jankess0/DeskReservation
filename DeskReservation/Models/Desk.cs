@@ -22,7 +22,7 @@ public class Desk
     
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    // [ForeignKey("Room")]
-    // public int RoomId { get; set; }
-    // public Room Room { get; set; }
+    [ForeignKey("Room")]
+    public int RoomId { get; set; }
+    public Room Room { get; set; }
 }

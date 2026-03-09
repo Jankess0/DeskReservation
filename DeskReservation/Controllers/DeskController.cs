@@ -43,8 +43,30 @@ public class DeskController : ControllerBase
     [HttpGet("availabledesks")]
     public async Task<IActionResult> GetAvailableDesksAsync()
     {
-        var desks = await _deskService.GetAvailableDesksAsync();
-        return Ok(desks);
+        try
+        {
+            var desks = await _deskService.GetAvailableDesksAsync();
+            return Ok(desks);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(404, new { error = ex.Message });
+        }
+        
+    }
+
+    [HttpGet("byRoomId/{roomId}")]
+    public async Task<IActionResult> GetDesksByRoomIdAsync(int roomId)
+    {
+        try
+        {
+            var desks = await _deskService.GetDesksByRoomIdAsync(roomId);
+            return Ok(desks);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(404, new { error = ex.Message });
+        }
     }
     
     [HttpPost("{id}/checkin")]

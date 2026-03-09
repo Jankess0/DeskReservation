@@ -24,11 +24,11 @@ public class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
             .HasForeignKey(f => f.FloorId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        // modelBuilder.Entity<Desk>()
-        //     .HasOne(r => r.Room)
-        //     .WithMany(r => r.Desks)
-        //     .HasForeignKey(r => r.RoomId)
-        //     .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Desk>()
+            .HasOne(d => d.Room)
+            .WithMany(r => r.Desks)
+            .HasForeignKey(r => r.RoomId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Booking>()
             .HasOne(b => b.User)
