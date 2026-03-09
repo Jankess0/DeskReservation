@@ -36,10 +36,8 @@ public class DeskService : IDeskService
 
         for (int i = 0; i < desksDto.Count(); i++)
         {
-            await CheckCleaningProgress(desksDto[i], desks[i]);
+            CheckCleaningProgress(desksDto[i], desks[i]);
         }
-
-        await _context.SaveChangesAsync();
         
         return desksDto;
 }
@@ -53,9 +51,7 @@ public class DeskService : IDeskService
         
         var deskDto = _deskMapper.Map<DeskDto>(desk);
         
-        await CheckCleaningProgress(deskDto, desk);
-        
-        await _context.SaveChangesAsync();
+        CheckCleaningProgress(deskDto, desk);
         
         return deskDto;
     }
@@ -70,7 +66,7 @@ public class DeskService : IDeskService
         
         for (int i = 0; i < desksDto.Count(); i++)
         {
-            await CheckCleaningProgress(desksDto.ElementAt(i), desks[i]);
+            CheckCleaningProgress(desksDto.ElementAt(i), desks[i]);
         }
         return desksDto;
     }
@@ -190,22 +186,20 @@ public class DeskService : IDeskService
         };
     }
 
-    public async Task<bool> CheckCleaningProgress(DeskDto deskDto, Desk desk)
+    public void CheckCleaningProgress(DeskDto deskDto, Desk desk)
     {
         if (desk.Status == DeskState.Cleaning)
         {
             var timeElapsed = DateTime.UtcNow - desk.LastStatusChangeDate;
-            if (timeElapsed.TotalMinutes >= CleaningTime)
-            {
-                deskDto.Status = DeskDtoAvailableState;
-                desk.Status = DeskState.Available;
-            }
-            else
+            if (timeElapsed.TotalMinutes < CleaningTime)
             {
                 int minutesLeft = CleaningTime - (int)timeElapsed.TotalMinutes;
                 deskDto.Status = $"Cleaning {minutesLeft} minutes";
             }
+            else
+            {
+                deskDto.Status = DeskDtoAvailableState;
+            }
         }
-        return false;
     }
 }

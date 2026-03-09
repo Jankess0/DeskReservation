@@ -39,6 +39,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDeskService, DeskService>();
 builder.Services.AddScoped<IObserver, CleaningServiceNotifier>();
+builder.Services.AddHostedService<CleaningBackgroundService>();
 
 var app = builder.Build();
 
