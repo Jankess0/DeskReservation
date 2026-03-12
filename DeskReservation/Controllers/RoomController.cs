@@ -8,6 +8,7 @@ namespace DeskReservation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class RoomController : ControllerBase
 {
     private readonly IRoomService _roomService;
