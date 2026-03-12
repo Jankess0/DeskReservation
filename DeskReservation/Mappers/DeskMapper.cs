@@ -11,7 +11,8 @@ public class DeskMapper : Profile
         CreateMap<Desk, DeskDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ForMember(dest => dest.DeskType,
-                opt => opt.MapFrom(src => src.IsAdminOnly ? DeskType.Vip.ToString() : DeskType.Standard.ToString()));
+                opt => opt.MapFrom(src => src.IsAdminOnly ? DeskType.Vip.ToString() : DeskType.Standard.ToString()))
+            .ForMember(dest => dest.RoomNumber, opt => opt.MapFrom(src => src.Room.RoomNumber));
         CreateMap<DeskDto, Desk>();
         CreateMap<CreateDeskDto, Desk>()
             .ForMember(dest => dest.IsAdminOnly,

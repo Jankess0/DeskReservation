@@ -3,6 +3,7 @@ using System;
 using DeskReservation.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DeskReservation.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305163114_AddBookingentity")]
+    partial class AddBookingentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,7 +75,7 @@ namespace DeskReservation.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RoomId")
+                    b.Property<int?>("RoomId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -93,7 +96,7 @@ namespace DeskReservation.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("FloorNumber")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -178,13 +181,9 @@ namespace DeskReservation.Migrations
 
             modelBuilder.Entity("DeskReservation.Models.Desk", b =>
                 {
-                    b.HasOne("DeskReservation.Models.Room", "Room")
+                    b.HasOne("DeskReservation.Models.Room", null)
                         .WithMany("Desks")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Room");
+                        .HasForeignKey("RoomId");
                 });
 
             modelBuilder.Entity("DeskReservation.Models.Room", b =>

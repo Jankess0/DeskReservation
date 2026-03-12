@@ -7,5 +7,6 @@ public class DeskDto
     public string? Description { get; set; }
     public string Status { get; set; }
     public string DeskType { get; set; }
+    public string RoomNumber { get; set; }
     
 }

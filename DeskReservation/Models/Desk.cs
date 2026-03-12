@@ -19,8 +19,10 @@ public class Desk
     public DeskState Status { get; set; }
     
     public DateTime LastStatusChangeDate { get; set; } =  DateTime.UtcNow;
+    
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    // [ForeignKey("Room")]
-    // public int RoomId { get; set; }
-    // public Room Room { get; set; }
+    [ForeignKey("Room")]
+    public int RoomId { get; set; }
+    public Room Room { get; set; }
 }
