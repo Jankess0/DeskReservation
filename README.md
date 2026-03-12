@@ -1,53 +1,33 @@
 # Hot Desking API 🏢💻
 
-Zaawansowany backend systemu rezerwacji biurek (Hot Desking) stworzony w środowisku .NET. Aplikacja umożliwia zarządzanie użytkownikami, biurkami oraz procesem rezerwacji (check-in / check-out), wykorzystując architekturę opartą o sprawdzone wzorce projektowe.
+**Live Demo (Swagger):** [Otwórz Dokumentację API](https://b3nympfxi9.eu-central-1.awsapprunner.com)
 
-## 🛠 Technologie i Architektura
-
-* **Framework:** .NET (C#)
-* **Baza danych:** PostgreSQL (uruchamiana w kontenerze Docker)
-* **Autoryzacja:** JWT (JSON Web Tokens) z podziałem na role (Admin / User)
-* **Wzorce projektowe:**
-    * **State (Stan):** Zarządza cyklem życia biurka (np. `Dostępne`, `Zajęte`, `Sprzątanie`). Zapobiega wykonaniu akcji (np. *check-in*) na biurku, które nie jest w odpowiednim stanie.
-    * **Strategy (Strategia):** Wykorzystana do elastycznego zarządzania regułami rezerwacji.
-    * **Observer (Obserwator):** **Strategy (Strategia):** Wykorzystana do elastycznego zarządzania regułami rezerwacji (np. różne limity czasowe w zależności od roli użytkownika).
-  * **Observer (Obserwator):** Służy do reagowania na zdarzenia w systemie. Kiedy użytkownik zwalnia biurko (wykonuje *checkout*), system automatycznie wysyła powiadomienie e-mail do ekipy sprzątającej z informacją, że dane biurko wymaga sprzątania.
+Zaawansowany backend systemu rezerwacji biurek (Hot Desking) stworzony w środowisku .NET 8. Aplikacja demonstruje pełny cykl życia oprogramowania — od implementacji złożonych wzorców projektowych, przez konteneryzację, aż po wdrożenie w chmurze AWS.
 
 ---
 
-## 📡 Dokumentacja API (Endpointy)
+## 🚀 Infrastruktura i Chmura (Cloud-Native)
 
-Autoryzacja odbywa się poprzez przekazanie tokenu JWT w nagłówku żądania: `Authorization: Bearer <twój_token>`.
+Projekt został wdrożony w architekturze rozproszonej z wykorzystaniem usług **Amazon Web Services**:
 
-### 🔐 Autoryzacja
-| Metoda | Endpoint | Opis                                          |
-| :--- | :--- |:----------------------------------------------|
-| **POST** | `/Login` | Logowanie, Zwraca token JWT (Admin lub User). |
+* **AWS App Runner:** Hosting aplikacji w modelu bezserwerowym (Fully Managed), zapewniający automatyczne skalowanie i obsługę HTTPS.
+* **Amazon RDS (PostgreSQL):** Produkcyjna, zarządzana baza danych zapewniająca trwałość i bezpieczeństwo danych.
+* **Amazon ECR:** Prywatne repozytorium obrazów kontenerowych.
+* **Docker:** Aplikacja jest w pełni skonteneryzowana, co zapewnia spójność środowiska lokalnego i produkcyjnego.
 
+---
 
-### 👤 Użytkownicy (User)
-*Operacje modyfikujące wymagają uprawnień administratora.*
+## 🛠 Technologie i Architektura
 
-| Metoda | Endpoint | Opis |
-| :--- | :--- | :--- |
-| **GET** | `/User` | Pobiera listę wszystkich użytkowników. |
-| **GET** | `/User/{id}` | Pobiera szczegóły użytkownika o podanym ID. |
-| **POST** | `/User` | Tworzy nowe konto użytkownika. |
-| **PUT** | `/User/{id}` | Aktualizuje dane użytkownika. |
-| **DELETE** | `/User/{id}` | Usuwa konto użytkownika. |
+* **Framework:** .NET 8 (ASP.NET Core)
+* **Baza danych:** PostgreSQL (EF Core)
+* **Autoryzacja:** JWT (JSON Web Tokens) z autoryzacją opartą na rolach (**RBAC**).
+* **Wzorce projektowe:**
+    * **State (Stan):** Zarządza cyklem życia biurka (`Available`, `Occupied`, `Cleaning`). Logika biznesowa wymusza poprawne przejścia między stanami (np. brak możliwości rezerwacji biurka w trakcie sprzątania).
+    * **Strategy (Strategia):** Umożliwia elastyczne definiowanie reguł rezerwacji w zależności od typu użytkownika (np. różne limity czasowe).
+    * **Observer (Obserwator):** System automatycznie wykrywa zakończenie rezerwacji i wysyła powiadomienia e-mail (SMTP/Gmail) do serwisu sprzątającego.
 
-### 🪑 Biurka (Desk)
-| Metoda | Endpoint | Opis |
-| :--- | :--- | :--- |
-| **GET** | `/Desk` | Pobiera listę wszystkich biurek i ich status. |
-| **GET** | `/Desk/availabledesks` | Pobiera listę dostępnych biurek. |
-| **GET** | `/Desk/{id}` | Pobiera szczegóły konkretnego biurka. |
-| **POST** | `/Desk` | Dodaje nowe biurko (Admin). |
-| **PUT** | `/Desk/{id}` | Aktualizuje dane biurka (Admin). |
-| **DELETE** | `/Desk/{id}` | Usuwa biurko z systemu (Admin). |
+---
 
-### ✅ Rezerwacje
-| Metoda | Endpoint | Opis |
-| :--- | :--- | :--- |
-| **POST** | `/Desk/{id}/checkin` | Rozpoczyna rezerwację, zmienia status na "Zajęte". |
-| **POST** | `/Desk/{id}/checkout` | Kończy rezerwację, zmienia status na "Dostępne". |
+## ✉️ Kontakt
+Kamil Janik – LinkedIn | GitHub
