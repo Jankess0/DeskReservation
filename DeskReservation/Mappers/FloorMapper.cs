@@ -14,5 +14,6 @@ public class FloorMapper : Profile
         CreateMap<Floor, FloorDto>();
         CreateMap<Floor, CreateFloorDto>();
         CreateMap<CreateFloorDto, Floor>();
+        CreateMap<Room, ListRoomDto>();
     }
 }

@@ -40,6 +40,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDeskService, DeskService>();
 builder.Services.AddScoped<IObserver, CleaningServiceNotifier>();
 builder.Services.AddHostedService<CleaningBackgroundService>();
+builder.Services.AddScoped<IFloorService, FloorService>();
 
 var app = builder.Build();
 
