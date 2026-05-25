@@ -79,6 +79,14 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
         };
     });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
  
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDeskService, DeskService>();
@@ -90,6 +98,7 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 
 var app = builder.Build();
 
+app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI(c => 
 {
