@@ -6,7 +6,7 @@ namespace DeskReservation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class BookingController : ControllerBase
 {
     private readonly IBookingService _bookingService;
@@ -17,6 +17,7 @@ public class BookingController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetBookings()
     {
         var result = await _bookingService.GetAllBookings();
@@ -24,6 +25,7 @@ public class BookingController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetBookingById(int id)
     {
         try
@@ -39,6 +41,7 @@ public class BookingController : ControllerBase
     }
 
     [HttpGet("byDeskId/{deskId}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetBookingByDeskId(int deskId)
     {
         var result = await _bookingService.GetBookingById(deskId);
