@@ -36,7 +36,7 @@ public class UserService : IUserService
     {
         var user = await _context.Users.FindAsync(id);
         
-        if (user == null) return null;
+        if (user == null) throw new KeyNotFoundException($"couldn't find user with id {id}");
         
         return _userMapper.Map<UserDto>(user);
     }
@@ -79,11 +79,11 @@ public class UserService : IUserService
     public async Task<string> LoginAsync(LoginDto dto)
     {
         var user = await _context.Users.SingleOrDefaultAsync(user => user.Email == dto.Email);
-        if (user == null) throw new Exception("Invalid email or password");
+        if (user == null) throw new ArgumentException("Invalid email or password");
         
         bool ispassValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
         
-        if (!ispassValid) throw new Exception("Invalid email or password");
+        if (!ispassValid) throw new ArgumentException("Invalid email or password");
         
         var token = GenerateJwtToken(user);
         return token;

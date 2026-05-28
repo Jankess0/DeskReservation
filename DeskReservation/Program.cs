@@ -1,5 +1,6 @@
 using System.Text;
 using DeskReservation.DbContext;
+using DeskReservation.Middleware;
 using DeskReservation.Observer;
 using DeskReservation.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -98,6 +99,7 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI(c => 

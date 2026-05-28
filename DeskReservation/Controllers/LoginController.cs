@@ -17,14 +17,7 @@ public class LoginController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync(LoginDto dto)
     {
-        try
-        {
             var token = await _userService.LoginAsync(dto);
             return Ok(new { token }); //zwracamy JSON
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
     }
 }

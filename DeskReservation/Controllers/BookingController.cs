@@ -28,23 +28,15 @@ public class BookingController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetBookingById(int id)
     {
-        try
-        {
-            var result = await _bookingService.GetBookingById(id);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(404, new { error = ex.Message });
-        }
-
+        var result = await _bookingService.GetBookingById(id);
+        return Ok(result);
     }
 
     [HttpGet("byDeskId/{deskId}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetBookingByDeskId(int deskId)
     {
-        var result = await _bookingService.GetBookingById(deskId);
+        var result = await _bookingService.GetBookingsByDeskId(deskId);
         return Ok(result);
     }
 

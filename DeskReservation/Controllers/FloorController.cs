@@ -20,15 +20,8 @@ public class FloorController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFloorAsync([FromRoute] int id)
     {
-        try
-        {
             var floor = await _floorService.GetFloorAsync(id);
             return Ok(floor);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(404, new { error = ex.Message });
-        }
     }
 
     [HttpGet]
@@ -50,30 +43,16 @@ public class FloorController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> EditFloorAsync([FromBody] CreateFloorDto dto, [FromRoute] int id)
     {
-        try
-        {
-            var result =  await _floorService.UpdateFloorAsync(dto, id);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(404, new { error = ex.Message });
-        }
+        var result =  await _floorService.UpdateFloorAsync(dto, id);
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteFloorAsync([FromRoute] int id)
     {
-        try
-        {
-            var result = await _floorService.DeleteFloorAsync(id);
-            return Ok(result);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(404, new { error = e.Message });
-        }
+        var result = await _floorService.DeleteFloorAsync(id);
+        return Ok(result);
     }
     
 }
