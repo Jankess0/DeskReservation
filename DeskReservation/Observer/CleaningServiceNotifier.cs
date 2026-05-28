@@ -1,5 +1,6 @@
 using System.Net.Mail;
 using DeskReservation.Models;
+using MailKit.Security;
 using MimeKit;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
@@ -21,7 +22,7 @@ public class CleaningServiceNotifier : IObserver
         }
     }
 
-    public void SendEmail(Desk desk)
+    public async Task SendEmail(Desk desk)
     {
         var myEmail = _configuration["EmailSettings:Email"];
         var myPassword = _configuration["EmailSettings:Password"];
@@ -36,10 +37,10 @@ public class CleaningServiceNotifier : IObserver
         {
             try
             {
-                client.Connect("smtp.gmail.com", 587, false);
-                client.Authenticate(myEmail, myPassword);
-                client.Send(message);
-                client.Disconnect(true);
+                await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(myEmail, myPassword);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
 
             }
             catch (SmtpException ex)

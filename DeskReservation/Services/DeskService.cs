@@ -47,7 +47,7 @@ public class DeskService : IDeskService
         var desk = await _context.Desks
             .Include(d => d.Room)
             .FirstOrDefaultAsync(d => d.Id == id);
-        if (desk == null) throw new Exception($"Desk with id {id} not found");
+        if (desk == null) throw new KeyNotFoundException($"Desk with id {id} not found");
         
         var deskDto = _deskMapper.Map<DeskDto>(desk);
         
@@ -61,7 +61,7 @@ public class DeskService : IDeskService
         var desks = await _context.Desks.Where(d => d.RoomId == roomId)
             .Include(d => d.Room)
             .ToListAsync();
-        if (desks.Count == 0) throw new Exception($"Empty room");
+        if (desks.Count == 0) throw new ArgumentException($"Empty room");
         var desksDto = _deskMapper.Map<IEnumerable<DeskDto>>(desks);
         
         for (int i = 0; i < desksDto.Count(); i++)
@@ -105,13 +105,13 @@ public class DeskService : IDeskService
     public async Task<bool> CheckOutAsync(int deskId, int userId)
     {
         var desk = await _context.Desks.FindAsync(deskId);
-        if (desk == null) throw new Exception("Desk not found");
+        if (desk == null) throw new KeyNotFoundException("Desk not found");
         
         var state = GetState(desk.Status);
         state.CheckOut(desk);
         
         var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.UserId == userId && b.DeskId == deskId && b.EndDate == null);
-        if (booking == null) throw new Exception("Booking not found");
+        if (booking == null) throw new KeyNotFoundException("Booking not found");
         
         booking.EndDate = DateTime.UtcNow;
         
@@ -141,7 +141,7 @@ public class DeskService : IDeskService
     public async Task<bool> DeleteDeskAsync(int deskId)
     {
         var desk = await _context.Desks.FindAsync(deskId);
-        if (desk == null) throw new Exception("Desk not found");
+        if (desk == null) throw new KeyNotFoundException("Desk not found");
         _context.Desks.Remove(desk);
         var result = await _context.SaveChangesAsync() > 0;
         return result;

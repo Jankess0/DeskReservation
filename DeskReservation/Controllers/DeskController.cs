@@ -29,91 +29,51 @@ public class DeskController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDeskAsync([FromRoute] int id)
     {
-        try
-        {
-            var desk = await _deskService.GetDeskAsync(id);
-            return Ok(desk);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(404, new { error = ex.Message });
-        }
+        var desk = await _deskService.GetDeskAsync(id);
+        return Ok(desk);
     }
 
     [HttpGet("availabledesks")]
     public async Task<IActionResult> GetAvailableDesksAsync()
     {
-        try
-        {
-            var desks = await _deskService.GetAvailableDesksAsync();
-            return Ok(desks);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(404, new { error = ex.Message });
-        }
-        
+        var desks = await _deskService.GetAvailableDesksAsync();
+        return Ok(desks);
     }
 
     [HttpGet("byRoomId/{roomId}")]
     public async Task<IActionResult> GetDesksByRoomIdAsync(int roomId)
     {
-        try
-        {
-            var desks = await _deskService.GetDesksByRoomIdAsync(roomId);
-            return Ok(desks);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(404, new { error = ex.Message });
-        }
+        var desks = await _deskService.GetDesksByRoomIdAsync(roomId);
+        return Ok(desks);
+  
     }
     
     [HttpPost("{id}/checkin")]
     public async Task<IActionResult> CheckIn([FromRoute] int id)
     {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (userIdClaim == null)
-                return Unauthorized("Token Error");
+        if (userIdClaim == null)
+            return Unauthorized("Token Error");
 
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-                return BadRequest("Token Error");
+        if (!int.TryParse(userIdClaim.Value, out int userId))
+            return BadRequest("Token Error");
 
-            await _deskService.CheckInAsync(id, userId);
-            return Ok(new { message = "Check In Success" });
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.Contains("permission"))
-            {
-                return StatusCode(403, new { error = ex.Message });
-            }
-            
-            return BadRequest(new { error = ex.Message });
-        }
+        await _deskService.CheckInAsync(id, userId);
+        return Ok(new { message = "Check In Success" });
     }
 
     [HttpPost("{id}/checkout")]
     public async Task<IActionResult> CheckOut([FromRoute] int id)
     {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                return Unauthorized("Token Error");
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-                return BadRequest("Token Error");
-            
-            await _deskService.CheckOutAsync(id, userId);
-            return Ok(new { message = "Check Out Success" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            return Unauthorized("Token Error");
+        if (!int.TryParse(userIdClaim.Value, out int userId))
+            return BadRequest("Token Error");
+        
+        await _deskService.CheckOutAsync(id, userId);
+        return Ok(new { message = "Check Out Success" });
     }
 
     [HttpPost]

@@ -36,7 +36,7 @@ public class BookingService : IBookingService
     public async Task<BookingDto> GetBookingById(int id)
     {
         var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id);
-        if (booking == null) throw new KeyNotFoundException();
+        if (booking == null) throw new KeyNotFoundException($"Booking with ID {id} not found");
         var bookingDto = _mapper.Map<BookingDto>(booking);
         return bookingDto;
     }
